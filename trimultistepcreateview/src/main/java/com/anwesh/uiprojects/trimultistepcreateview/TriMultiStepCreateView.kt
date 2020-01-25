@@ -25,3 +25,38 @@ fun Float.maxScale(i : Int, n : Int) : Float = Math.max(0f, this - i * n.inverse
 fun Float.divideScale(i : Int, n : Int) : Float = Math.min(n.inverse(), maxScale(i, n)) * n
 fun Float.sinify() : Float = Math.sin(this * Math.PI).toFloat()
 
+fun Canvas.drawTriStep(i : Int, scale : Float, w : Float, paint : Paint) {
+    val gap : Float = w / (nodes + 1)
+    val sf : Float = scale.sinify().divideScale(i, lines)
+    save()
+    translate(gap * (i + 1), 0f)
+    for (j in 0..1) {
+        val syi : Float = sf.divideScale(j, 2)
+        if (syi == 0f) {
+            break
+        }
+        val sj : Float = 1f - 2 * j
+        drawLine(gap / 2 * i, gap / 2 * i, gap/ 2 * i + gap / 2 * syi, gap / 2 * i + (gap / 2) * syi * sj, paint)
+    }
+    restore()
+}
+
+fun Canvas.drawTriStepLines(scale : Float, w : Float, paint : Paint) {
+    for (j in 0..(lines - 1)) {
+        drawTriStep(j, scale, w, paint)
+    }
+}
+
+fun Canvas.drawTSLNode(i : Int, scale : Float, paint : Paint) {
+    val w : Float = width.toFloat()
+    val h : Float = height.toFloat()
+    val hGap : Float = h / (nodes + 1)
+    paint.color = foreColor
+    paint.strokeCap = Paint.Cap.ROUND
+    paint.strokeWidth = Math.min(w, h) / strokeFactor
+    save()
+    translate(0f, hGap * i)
+    drawTriStepLines(scale, w, paint)
+    restore()
+}
+
