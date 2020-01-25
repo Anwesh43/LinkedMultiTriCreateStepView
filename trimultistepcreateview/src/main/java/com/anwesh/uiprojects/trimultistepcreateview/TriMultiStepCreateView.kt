@@ -14,9 +14,9 @@ import android.app.Activity
 
 val nodes : Int = 5
 val lines : Int = 5
-val scGap : Float = 0.02f
+val scGap : Float = 0.02f / lines
 val strokeFactor : Float = 90f
-val delay : Long = 20
+val delay : Long = 15
 val foreColor : Int = Color.parseColor("#3F51B5")
 val backColor : Int = Color.parseColor("#BDBDBD")
 
@@ -26,17 +26,17 @@ fun Float.divideScale(i : Int, n : Int) : Float = Math.min(n.inverse(), maxScale
 fun Float.sinify() : Float = Math.sin(this * Math.PI).toFloat()
 
 fun Canvas.drawTriStep(i : Int, scale : Float, w : Float, paint : Paint) {
-    val gap : Float = w / (nodes + 1)
+    val gap : Float = w / (lines)
     val sf : Float = scale.sinify().divideScale(i, lines)
     save()
-    translate(gap * (i + 1), 0f)
+    translate(gap * i, 0f)
     for (j in 0..1) {
         val syi : Float = sf.divideScale(j, 2)
         if (syi == 0f) {
             break
         }
         val sj : Float = 1f - 2 * j
-        drawLine(gap / 2 * i, gap / 2 * i, gap/ 2 * i + gap / 2 * syi, gap / 2 * i + (gap / 2) * syi * sj, paint)
+        drawLine(gap / 2 * j, -gap / 2 * j, gap/ 2 * j + gap / 2 * syi, -gap / 2 * j - (gap / 2) * syi * sj, paint)
     }
     restore()
 }
@@ -55,7 +55,7 @@ fun Canvas.drawTSLNode(i : Int, scale : Float, paint : Paint) {
     paint.strokeCap = Paint.Cap.ROUND
     paint.strokeWidth = Math.min(w, h) / strokeFactor
     save()
-    translate(0f, hGap * i)
+    translate(0f, hGap * (i + 1))
     drawTriStepLines(scale, w, paint)
     restore()
 }
@@ -85,7 +85,7 @@ class TriMultiStepCreateView(ctx : Context) : View(ctx) {
             if (Math.abs(scale - prevScale) > 1) {
                 scale = prevScale + dir
                 dir = 0f
-                prevScale = 0f
+                prevScale = scale
                 cb(prevScale)
             }
         }
@@ -206,7 +206,7 @@ class TriMultiStepCreateView(ctx : Context) : View(ctx) {
 
         fun handleTap() {
             tms.startUpdating {
-                animator.stop()
+                animator.start()
             }
         }
     }
