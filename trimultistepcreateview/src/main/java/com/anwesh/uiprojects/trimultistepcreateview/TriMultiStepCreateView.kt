@@ -210,4 +210,13 @@ class TriMultiStepCreateView(ctx : Context) : View(ctx) {
             }
         }
     }
+
+    companion object {
+
+        fun create(activity : Activity) : TriMultiStepCreateView {
+            val view : TriMultiStepCreateView = TriMultiStepCreateView(activity)
+            activity.setContentView(view)
+            return view
+        }
+    }
 }
