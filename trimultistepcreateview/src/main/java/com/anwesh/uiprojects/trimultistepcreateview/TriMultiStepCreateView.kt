@@ -124,4 +124,45 @@ class TriMultiStepCreateView(ctx : Context) : View(ctx) {
             }
         }
     }
+
+    data class TSLNode(var i : Int, val state : State = State()) {
+
+        private var next : TSLNode? = null
+        private var prev : TSLNode? = null
+
+        init {
+            addNeighbor()
+        }
+
+        fun addNeighbor() {
+            if (i < nodes - 1) {
+                next = TSLNode(i + 1)
+                next?.prev = this
+            }
+        }
+
+        fun draw(canvas : Canvas, paint : Paint) {
+            canvas.drawTSLNode(i, state.scale, paint)
+        }
+
+        fun update(cb : (Float) -> Unit) {
+            state.update(cb)
+        }
+
+        fun startUpdating(cb : () -> Unit) {
+            state.startUpdating(cb)
+        }
+
+        fun getNext(dir : Int, cb :  () -> Unit) : TSLNode {
+            var curr : TSLNode? = prev
+            if (dir == 1) {
+                curr = next
+            }
+            if (curr != null) {
+                return curr
+            }
+            cb() // dir == 1 && the current node is last node or dir == -1 && current node is equal to last node
+            return this
+        }
+    }
 }
