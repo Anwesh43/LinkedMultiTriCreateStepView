@@ -187,4 +187,26 @@ class TriMultiStepCreateView(ctx : Context) : View(ctx) {
             curr.startUpdating(cb)
         }
     }
+
+    data class Renderer(var view : TriMultiStepCreateView) {
+
+        private val animator : Animator = Animator(view)
+        private val tms : TriMultiStep = TriMultiStep(0)
+
+        fun render(canvas : Canvas, paint : Paint) {
+            canvas.drawColor(backColor)
+            tms.draw(canvas, paint)
+            animator.animate {
+                tms.update {
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            tms.startUpdating {
+                animator.stop()
+            }
+        }
+    }
 }
